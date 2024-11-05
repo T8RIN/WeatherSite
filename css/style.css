@@ -15,6 +15,7 @@ body {
   min-height: 100vh;
   background-image: url("https://images.pexels.com/photos/531756/pexels-photo-531756.jpeg?auto=compress&cs=tinysrgb&w=1200");
   background-color: #41e482;
+  background-size: cover
 }
 
 .container {
@@ -62,6 +63,15 @@ body {
   transition: 0.1s ease;
 }
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .search-section .search-input:focus {
   border-color: #00b642;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.14);
@@ -81,15 +91,15 @@ body {
   justify-content: center;
   border-radius: 4px 16px 16px 4px;
   background: #fff;
-  color:  #00b642;
+  color: #00b642;
   border: 1px solid #7befa5;
   transition: 0.3s ease;
 }
 
 .search-section .location-button:hover {
   color: #fff;
-  background:  #00b642;
-  border-color:  #00b642;
+  background: #00b642;
+  border-color: #00b642;
 }
 
 .search-section .location-button span {
