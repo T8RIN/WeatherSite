@@ -1,7 +1,7 @@
 const searchInput = document.querySelector(".search-input");
 const locationButton = document.querySelector(".location-button");
 const currentWeatherDiv = document.querySelector(".current-weather");
-const hourlyWeather = document.querySelector(".hourly-weather .weather-list");
+const hourlyWeather = document.querySelector(".day-forecast .weather-list");
 
 const API_KEY = "92b64a6d838c43918e6181715240511 "; // API key
 

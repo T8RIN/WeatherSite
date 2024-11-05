@@ -13,7 +13,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #41e482;
+  background-image: url("https://images.pexels.com/photos/531756/pexels-photo-531756.jpeg?auto=compress&cs=tinysrgb&w=1200");
+  background-color: #41e482;
 }
 
 .container {
@@ -156,12 +157,12 @@ body.show-no-results .weather-section {
   font-size: 1.25rem;
 }
 
-.hourly-weather {
+.day-forecast {
   padding: 16px 25px;
   border-top: 1px solid #7befa5;
 }
 
-.hourly-weather .weather-list {
+.day-forecast .weather-list {
   display: flex;
   gap: 26px;
   overflow-x: auto;
@@ -171,11 +172,11 @@ body.show-no-results .weather-section {
   scrollbar-color: transparent transparent;
 }
 
-.hourly-weather:hover .weather-list {
+.day-forecast:hover .weather-list {
   scrollbar-color: #1f974b transparent;
 }
 
-.hourly-weather .weather-list .weather-item {
+.day-forecast .weather-list .weather-item {
   display: flex;
   gap: 6px;
   width: 60px;
@@ -184,7 +185,7 @@ body.show-no-results .weather-section {
   align-items: center;
 }
 
-.hourly-weather .weather-item .weather-icon {
+.day-forecast .weather-item .weather-icon {
   width: 28px;
   aspect-ratio: 1;
 }
