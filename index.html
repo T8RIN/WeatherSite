@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App | CodingNepal</title>
+  <!-- Linking Google fonts for icons -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"/>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container">
+  <!-- Search section -->
+  <div class="search-section">
+    <div class="input-wrapper">
+      <span class="material-symbols-rounded">search</span>
+      <input type="search" placeholder="Введите название города" class="search-input">
+    </div>
+    <button class="location-button">
+      <span class="material-symbols-rounded">my_location</span>
+    </button>
+  </div>
+
+  <!-- No results message -->
+  <div class="no-results">
+    <img src="img/no-result.svg" alt="Результаты не найдены :(" class="icon">
+    <h3 class="title">Что-то пошло не так</h3>
+    <p class="message">Не удалось получить данные о погоде, убедитесь в правильности написания или попробуйте позже</p>
+  </div>
+
+  <!-- Container for displaying weather data -->
+  <div class="weather-section">
+    <div class="current-weather">
+      <img src="img/no-result.svg" class="weather-icon">
+      <h2 class="temperature">0<span>°C</span></h2>
+      <h5 class="description">Weather description</h5>
+    </div>
+
+    <!-- Hourly weather forecast list -->
+    <div class="hourly-weather">
+      <ul class="weather-list"></ul>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

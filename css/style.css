@@ -1,0 +1,190 @@
+/* Importing Google Fonts - Montserrat */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #41e482;
+}
+
+.container {
+  flex-grow: 1;
+  overflow: hidden;
+  max-width: 425px;
+  border-radius: 28px;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.search-section {
+  display: flex;
+  gap: 4px;
+  padding: 25px;
+  align-items: center;
+}
+
+.search-section .input-wrapper {
+  height: 54px;
+  width: 100%;
+  position: relative;
+}
+
+.search-section .input-wrapper span {
+  position: absolute;
+  top: 50%;
+  left: 17px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.search-section .search-input {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 16px 4px 4px 16px;
+  text-transform: uppercase;
+  padding: 0 20px 0 50px;
+  border: 1px solid #7befa5;
+  background: #fff;
+  transition: 0.1s ease;
+}
+
+.search-section .search-input:focus {
+  border-color: #00b642;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.14);
+}
+
+.search-section .search-input::placeholder {
+  text-transform: none;
+}
+
+.search-section .location-button {
+  height: 54px;
+  width: 56px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px 16px 16px 4px;
+  background: #fff;
+  color:  #00b642;
+  border: 1px solid #7befa5;
+  transition: 0.3s ease;
+}
+
+.search-section .location-button:hover {
+  color: #fff;
+  background:  #00b642;
+  border-color:  #00b642;
+}
+
+.search-section .location-button span {
+  font-size: 1.3rem;
+}
+
+.no-results {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  display: none;
+  padding: 40px;
+  text-align: center;
+  align-items: center;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  transition: 0.2s ease;
+}
+
+body.show-no-results .no-results {
+  display: flex;
+}
+
+.no-results .title {
+  font-weight: 700;
+  margin: 25px 0 15px;
+}
+
+.no-results .message {
+  font-weight: 500;
+  line-height: 23px;
+}
+
+body.show-no-results .weather-section {
+  visibility: hidden;
+}
+
+.weather-section .current-weather {
+  display: flex;
+  padding: 20px 0 50px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.current-weather .weather-icon {
+  width: 140px;
+  aspect-ratio: 1;
+}
+
+.current-weather .temperature {
+  font-size: 3.38rem;
+  margin: 23px 0;
+  display: flex;
+}
+
+.current-weather .temperature span {
+  font-size: 1.56rem;
+  font-weight: 500;
+  margin: 5px 0 0 2px;
+}
+
+.current-weather .description {
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
+.hourly-weather {
+  padding: 16px 25px;
+  border-top: 1px solid #7befa5;
+}
+
+.hourly-weather .weather-list {
+  display: flex;
+  gap: 26px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+  margin-bottom: -16px;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.hourly-weather:hover .weather-list {
+  scrollbar-color: #1f974b transparent;
+}
+
+.hourly-weather .weather-list .weather-item {
+  display: flex;
+  gap: 6px;
+  width: 60px;
+  font-weight: 500;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hourly-weather .weather-item .weather-icon {
+  width: 28px;
+  aspect-ratio: 1;
+}
