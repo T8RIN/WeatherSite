@@ -39,7 +39,7 @@ const showEmptyResult = () => {
   const result = document.querySelector(".no-results")
   // noinspection HtmlUnknownTarget
   result.innerHTML = `
-    <img src="img/empty.png" width="35%" alt="Введите город чтобы увидеть погоду" class="icon">
+    <img src="img/empty.png" width="20%" alt="Введите город чтобы увидеть погоду" class="icon">
     <h3 class="title">Введите город чтобы увидеть погоду</h3>
     <p class="message">Так же можно нажать на кнопку геолокации рядом с вводом, чтобы сделать это автоматически</p>
   `
@@ -77,10 +77,14 @@ const displayHourlyForecast = (hourlyData) => {
 
     return `<li class="weather-item">
             <p class="time">${time}</p>
-            <img src="${weatherIcon}" class="weather-icon" alt="">
+            <img src="${weatherIcon}" style="scale: 2; width: 32px; transform: translateY(-15%);" class="weather-icon" alt="">
             <p class="temperature">${temperature}°</p>
           </li>`;
   }).join('');
+
+  hourlyWeather.innerHTML += `<li class="weather-item">
+            <p style="padding-right: 16px"></p>
+          </li>`
 };
 
 const getWeatherDetails = async (API_URL) => {
