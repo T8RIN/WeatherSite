@@ -26,6 +26,7 @@ if (type === "today") {
 const showErrorResult = () => {
   document.body.classList.add("show-no-results");
   const result = document.querySelector(".no-results")
+  result.style.transform = "translateY(10%)";
   // noinspection HtmlUnknownTarget
   result.innerHTML = `
     <img src="img/no-result.svg" alt="Результаты не найдены :(" class="icon">
@@ -37,9 +38,10 @@ const showErrorResult = () => {
 const showEmptyResult = () => {
   document.body.classList.add("show-no-results");
   const result = document.querySelector(".no-results")
+  result.style.transform = "";
   // noinspection HtmlUnknownTarget
   result.innerHTML = `
-    <img src="img/empty.png" width="20%" alt="Введите город чтобы увидеть погоду" class="icon">
+    <img src="img/empty.png" width="30%" style="aspect-ratio: 1" alt="Введите город чтобы увидеть погоду" class="icon">
     <h3 class="title">Введите город чтобы увидеть погоду</h3>
     <p class="message">Так же можно нажать на кнопку геолокации рядом с вводом, чтобы сделать это автоматически</p>
   `
