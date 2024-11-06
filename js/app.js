@@ -6,12 +6,21 @@ const currentWeatherDiv = document.querySelector(".current-weather");
 const hourlyWeather = document.querySelector(".day-forecast .weather-list");
 const todayButton = document.querySelector(".today-button");
 const tomorrowButton = document.querySelector(".tomorrow-button");
+const buttonsSection = document.querySelector(".buttons-section");
 
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const type = urlParams.get("type");
 const city = urlParams.get("city");
+
+if (type === "today") {
+  buttonsSection.removeChild(todayButton);
+  tomorrowButton.style.borderRadius = "16px"
+} else if (type === "tomorrow") {
+  buttonsSection.removeChild(tomorrowButton);
+  todayButton.style.borderRadius = "16px"
+}
 
 const API_KEY = "92b64a6d838c43918e6181715240511 "; // API key
 
@@ -132,5 +141,10 @@ tomorrowButton.addEventListener("click", () => {
 if (type && type.trim().length > 0) {
   setupWeatherRequest(city)
 } else {
-  document.body.classList.add("show-no-results");
+  const search = city ? city : searchInput.value;
+  if (search && search.length > 0) {
+    setupWeatherRequest(search)
+  } else {
+    document.body.classList.add("show-no-results");
+  }
 }
