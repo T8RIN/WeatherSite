@@ -138,6 +138,38 @@ body.show-no-results .weather-section {
   visibility: hidden;
 }
 
+.no-results-empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  display: none;
+  padding: 40px;
+  text-align: center;
+  align-items: center;
+  flex-direction: column;
+  transform: translate(-50%, -50%);
+  transition: 0.2s ease;
+}
+
+body.show-no-results-empty .no-results-empty {
+  display: flex;
+}
+
+.no-results-empty .title {
+  font-weight: 700;
+  margin: 25px 0 15px;
+}
+
+.no-results-empty .message {
+  font-weight: 500;
+  line-height: 23px;
+}
+
+body.show-no-results-empty .weather-section {
+  visibility: hidden;
+}
+
 .weather-section .current-weather {
   display: flex;
   padding: 20px 0 50px;

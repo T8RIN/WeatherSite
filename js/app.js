@@ -63,6 +63,7 @@ const displayHourlyForecast = (hourlyData) => {
 const getWeatherDetails = async (API_URL) => {
   window.innerWidth <= 768 && searchInput.blur();
   document.body.classList.remove("show-no-results");
+  document.body.classList.remove("show-no-results-empty");
 
   try {
     const response = await fetch(API_URL);
@@ -145,6 +146,6 @@ if (type && type.trim().length > 0) {
   if (search && search.length > 0) {
     setupWeatherRequest(search)
   } else {
-    document.body.classList.add("show-no-results");
+    document.body.classList.add("show-no-results-empty");
   }
 }
