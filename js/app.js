@@ -26,6 +26,7 @@ if (type === "today") {
 const showErrorResult = () => {
   document.body.classList.add("show-no-results");
   const result = document.querySelector(".no-results")
+  // noinspection HtmlUnknownTarget
   result.innerHTML = `
     <img src="img/no-result.svg" alt="Результаты не найдены :(" class="icon">
     <h3 class="title">Что-то пошло не так</h3>
@@ -36,6 +37,7 @@ const showErrorResult = () => {
 const showEmptyResult = () => {
   document.body.classList.add("show-no-results");
   const result = document.querySelector(".no-results")
+  // noinspection HtmlUnknownTarget
   result.innerHTML = `
     <img src="img/empty.png" width="35%" alt="Введите город чтобы увидеть погоду" class="icon">
     <h3 class="title">Введите город чтобы увидеть погоду</h3>
