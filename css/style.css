@@ -152,8 +152,13 @@ body.show-no-results .weather-section {
   transition: 0.2s ease;
 }
 
+.no-results-empty {
+  visibility: hidden;
+}
+
 body.show-no-results-empty .no-results-empty {
   display: flex;
+  visibility: visible;
 }
 
 .no-results-empty .title {
@@ -167,6 +172,10 @@ body.show-no-results-empty .no-results-empty {
 }
 
 body.show-no-results-empty .weather-section {
+  visibility: hidden;
+}
+
+body.show-no-results-empty .no-results {
   visibility: hidden;
 }
 
