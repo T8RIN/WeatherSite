@@ -199,3 +199,61 @@ body.show-no-results .weather-section {
   width: 28px;
   aspect-ratio: 1;
 }
+
+.today-button {
+  height: 36px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px 4px 4px 16px;
+  background: #fff;
+  color: #00b642;
+  border: 1px solid #7befa5;
+  transition: 0.3s ease;
+  margin: 0 0 16px 0;
+  padding: 16px;
+}
+
+.today-button:hover {
+  color: #fff;
+  background: #00b642;
+  border-color: #00b642;
+}
+
+.today-button span {
+  font-size: 1.3rem;
+}
+
+.tomorrow-button {
+  height: 36px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px 16px 16px 4px;
+  background: #fff;
+  color: #00b642;
+  border: 1px solid #7befa5;
+  transition: 0.3s ease;
+  margin: 0 0 16px 0;
+  padding: 16px;
+}
+
+.tomorrow-button:hover {
+  color: #fff;
+  background: #00b642;
+  border-color: #00b642;
+}
+
+.tomorrow-button span {
+  font-size: 1.3rem;
+}
+
+.buttons-section {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
