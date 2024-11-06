@@ -22,6 +22,27 @@ if (type === "today") {
   todayButton.style.borderRadius = "16px"
 }
 
+
+const showErrorResult = () => {
+  document.body.classList.add("show-no-results");
+  const result = document.querySelector(".no-results")
+  result.innerHTML = `
+    <img src="img/no-result.svg" alt="Результаты не найдены :(" class="icon">
+    <h3 class="title">Что-то пошло не так</h3>
+    <p class="message">Не удалось получить данные о погоде, убедитесь в правильности написания или попробуйте позже</p>
+  `
+}
+
+const showEmptyResult = () => {
+  document.body.classList.add("show-no-results");
+  const result = document.querySelector(".no-results")
+  result.innerHTML = `
+    <img src="img/empty.png" width="35%" alt="Введите город чтобы увидеть погоду" class="icon">
+    <h3 class="title">Введите город чтобы увидеть погоду</h3>
+    <p class="message">Так же можно нажать на кнопку геолокации рядом с вводом, чтобы сделать это автоматически</p>
+  `
+}
+
 const API_KEY = "92b64a6d838c43918e6181715240511 "; // API key
 
 const navigateToTomorrow = () => {
@@ -63,7 +84,6 @@ const displayHourlyForecast = (hourlyData) => {
 const getWeatherDetails = async (API_URL) => {
   window.innerWidth <= 768 && searchInput.blur();
   document.body.classList.remove("show-no-results");
-  document.body.classList.remove("show-no-results-empty");
 
   try {
     const response = await fetch(API_URL);
@@ -100,7 +120,7 @@ const getWeatherDetails = async (API_URL) => {
     }
   } catch (error) {
     console.log(error);
-    document.body.classList.add("show-no-results");
+    showErrorResult()
   }
 }
 
@@ -146,6 +166,6 @@ if (type && type.trim().length > 0) {
   if (search && search.length > 0) {
     setupWeatherRequest(search)
   } else {
-    document.body.classList.add("show-no-results-empty");
+    showEmptyResult()
   }
 }
