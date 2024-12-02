@@ -172,7 +172,7 @@ body.show-no-results .weather-section {
 
 .day-forecast .weather-list {
   display: flex;
-  gap: 26px;
+  gap: 36px;
   overflow-x: auto;
   margin-bottom: -2px;
   scrollbar-width: thin;

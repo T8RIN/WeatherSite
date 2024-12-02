@@ -57,6 +57,8 @@ const navigateToToday = () => {
   window.location.href = `index.html?type=today&city=${searchInput.value}`;
 }
 
+let dropdownData = ""
+
 const displayHourlyForecast = (hourlyData) => {
   const currentHour = new Date().setMinutes(0, 0, 0)
   const next24Hours = currentHour + 24 * 60 * 60 * 1000;
@@ -72,21 +74,31 @@ const displayHourlyForecast = (hourlyData) => {
     });
   }
 
-  hourlyWeather.innerHTML = next24HoursData.map((item) => {
+  hourlyWeather.innerHTML = next24HoursData.map((item, index) => {
     const temperature = Math.floor(item.temp_c);
     const time = item.time.split(' ')[1].substring(0, 5);
-    const weatherIcon = item.condition.icon.replace("64x64", "128x128")
+    const weatherIcon = item.condition.icon.replace("64x64", "128x128");
+
+
+    const label = `weather-item-${index}`
 
     return `<li class="weather-item">
             <p class="time">${time}</p>
             <img src="${weatherIcon}" style="scale: 2; width: 32px; transform: translateY(-15%);" class="weather-icon" alt="">
             <p class="temperature">${temperature}°</p>
+
+            <ul class="dropdown-menu ${index}" aria-labelledby="${label}">
+              <p class="dropdown-item">Влажность: ${dropdownData ? dropdownData.humidity : item.humidity}%</p>
+              <p class="dropdown-item">Скорость ветра: ${item.wind_kph} км/ч</p>
+              <p class="dropdown-item">Условия: ${translationsJson.find(translation => translation.code === item.condition.code).languages.find(lang => lang.lang_iso === "ru").night_text}</p>
+            </ul>
           </li>`;
   }).join('');
 
   hourlyWeather.innerHTML += `<li class="weather-item">
             <p style="padding-right: 16px"></p>
-          </li>`
+          </li>`;
+
 };
 
 const getWeatherDetails = async (API_URL) => {
