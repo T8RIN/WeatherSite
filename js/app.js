@@ -101,7 +101,7 @@ const displayHourlyForecast = (hourlyData) => {
 
 };
 
-const getWeatherDetails = async (API_URL) => {
+const getWeatherDetails = async (API_URL, cityName) => {
   window.innerWidth <= 768 && searchInput.blur();
   document.body.classList.remove("show-no-results");
 
@@ -110,48 +110,33 @@ const getWeatherDetails = async (API_URL) => {
     const data = await response.json();
     moment.locale("ru");
 
-    if (type === "today" || type !== "tomorrow") {
-      const temperature = Math.floor(data.current.temp_c);
-
-      currentWeatherDiv.querySelector(".weather-icon").src = data.current.condition.icon.replace("64x64", "128x128");
-      currentWeatherDiv.querySelector(".temperature").innerHTML = `${temperature}<span>°C</span>`;
-      currentWeatherDiv.querySelector(".date").innerText = moment().format('dd, D MMMM, h:mm');
-
-      currentWeatherDiv.querySelector(".description").innerText = translationsJson.find(translation => translation.code === data.current.condition.code).languages.find(lang => lang.lang_iso === "ru").night_text;
-
-      const combinedHourlyData = [...data.forecast?.forecastday[0]?.hour, ...data.forecast?.forecastday[1]?.hour];
-
-      searchInput.value = data.location.name;
-      displayHourlyForecast(combinedHourlyData);
-    } else {
-      const current = data.forecast.forecastday[1]
-      const temperature = Math.floor(current.hour[0].temp_c);
-
-      currentWeatherDiv.querySelector(".weather-icon").src = current.hour[0].condition.icon.replace("64x64", "128x128");
-      currentWeatherDiv.querySelector(".temperature").innerHTML = `${temperature}<span>°C</span>`;
-      currentWeatherDiv.querySelector(".date").innerText = moment().add(1, "days").format('dd, D MMMM');
-
-      currentWeatherDiv.querySelector(".description").innerText = translationsJson.find(translation => translation.code === current.hour[0].condition.code).languages.find(lang => lang.lang_iso === "ru").night_text;
-
-      const combinedHourlyData = [...data.forecast?.forecastday[1]?.hour, ...data.forecast?.forecastday[2]?.hour];
-
-      searchInput.value = data.location.name;
-      displayHourlyForecast(combinedHourlyData);
+    if (data.error) {
+      showErrorResult();
+      return;
     }
+
+    // Формируем структуру для вывода (только текущий день)
+    const temperature = Math.floor(data.min_temp);
+    currentWeatherDiv.querySelector(".weather-icon").src = data.icon || "img/no-result.svg";
+    currentWeatherDiv.querySelector(".temperature").innerHTML = `${temperature}<span>°C</span>`;
+    currentWeatherDiv.querySelector(".date").innerText = (type === "tomorrow" ? moment().add(1, "days") : moment()).format('dd, D MMMM');
+    currentWeatherDiv.querySelector(".description").innerText = data.description || "Нет описания";
+    searchInput.value = cityName;
+    // Нет почасового прогноза — просто очищаем список
+    hourlyWeather.innerHTML = '';
   } catch (error) {
     console.log(error);
-    showErrorResult()
+    showErrorResult();
   }
 }
 
 const setupWeatherRequest = (cityName) => {
-  const API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${cityName}&days=3`;
-  getWeatherDetails(API_URL).then();
+  const API_URL = `/api/weather.php?city=${encodeURIComponent(cityName)}&type=${type || 'today'}`;
+  getWeatherDetails(API_URL, cityName).then();
 }
 
 searchInput.addEventListener("keyup", (e) => {
   const cityName = searchInput.value.trim();
-
   if (e.key === "Enter" && cityName) {
     setupWeatherRequest(cityName);
   }
@@ -161,8 +146,9 @@ locationButton.addEventListener("click", () => {
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const {latitude, longitude} = position.coords;
-      const API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${latitude},${longitude}&days=2`;
-      getWeatherDetails(API_URL).then();
+      // Для геолокации используем lat,lon как город
+      const cityName = `${latitude},${longitude}`;
+      setupWeatherRequest(cityName);
       window.innerWidth >= 768 && searchInput.focus();
     },
     () => {
@@ -172,7 +158,7 @@ locationButton.addEventListener("click", () => {
 });
 
 todayButton.addEventListener("click", () => {
-  navigateToToday()
+  navigateToToday();
 });
 
 tomorrowButton.addEventListener("click", () => {
@@ -180,12 +166,12 @@ tomorrowButton.addEventListener("click", () => {
 });
 
 if (type && type.trim().length > 0) {
-  setupWeatherRequest(city)
+  setupWeatherRequest(city);
 } else {
   const search = city ? city : searchInput.value;
   if (search && search.length > 0) {
-    setupWeatherRequest(search)
+    setupWeatherRequest(search);
   } else {
-    showEmptyResult()
+    showEmptyResult();
   }
 }
