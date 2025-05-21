@@ -329,3 +329,43 @@ body.show-no-results .weather-section {
   opacity: 1;
   pointer-events: auto;
 }
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 9999;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notification.show {
+  transform: translateX(0);
+}
+
+.notification.success {
+  border-left: 4px solid #1f974b;
+}
+
+.notification.error {
+  border-left: 4px solid #e74c3c;
+}
+
+.notification .icon {
+  font-size: 24px;
+}
+
+.notification.success .icon {
+  color: #1f974b;
+}
+
+.notification.error .icon {
+  color: #e74c3c;
+}

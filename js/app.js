@@ -236,16 +236,41 @@ async function updateFavoriteBtn(cityName) {
   addFavoriteBtn.title = fav ? 'Удалить из избранного' : 'Добавить в избранное';
 }
 
+// Функция для отображения уведомлений
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = `notification ${type}`;
+  notification.innerHTML = `
+    <span class="material-symbols-rounded icon">${type === 'success' ? 'check_circle' : 'error'}</span>
+    <span>${message}</span>
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => notification.classList.add('show'), 10);
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
 // Добавить/удалить из избранного
 addFavoriteBtn && addFavoriteBtn.addEventListener('click', async () => {
   if (!currentLocationId) return;
   const fav = await isFavorite(currentLocationId);
   const formData = new FormData();
   formData.append('location_id', currentLocationId);
-  await fetch(`/api/favorites.php?action=${fav ? 'remove' : 'add'}`, {
+  const response = await fetch(`/api/favorites.php?action=${fav ? 'remove' : 'add'}`, {
     method: 'POST',
     body: formData
   });
+  const data = await response.json();
+  if (data.success) {
+    showNotification(
+      fav ? 'Город удален из избранного' : 'Город добавлен в избранное',
+      fav ? 'error' : 'success'
+    );
+  } else {
+    showNotification(data.error || 'Произошла ошибка', 'error');
+  }
   updateFavoriteBtn(searchInput.value.trim());
   if (showFavoritesBtn) loadFavorites();
 });
