@@ -377,3 +377,29 @@ if (showTempBtn && tempPopup && closeTempBtn) {
     }
   });
 }
+
+// Функция для обработки ошибок регистрации/входа
+function handleAuthError(error) {
+  showNotification(error.replace("<>: 1644 ", "") || 'Произошла ошибка', 'error');
+}
+
+const showAvgTempBtn = document.getElementById('showAvgTempBtn');
+if (showAvgTempBtn) {
+  showAvgTempBtn.addEventListener('click', async () => {
+    const cityName = searchInput.value.trim() || city;
+    const locationId = await getLocationId(cityName);
+    const date = new Date().toISOString().slice(0, 10); // сегодня
+    const resp = await fetch(`/api/weather.php?action=avg_temp&location_id=${locationId}&date=${date}`);
+    const data = await resp.json();
+    if (data.success) {
+      showNotification(
+        data.avg_temp
+          ? `Средняя температура за сутки: <b>${data.avg_temp}°C</b>`
+          : 'Нет данных для расчёта средней температуры',
+        data.avg_temp ? 'success' : 'error'
+      );
+    } else {
+      showNotification('Ошибка при получении данных', 'error');
+    }
+  });
+}

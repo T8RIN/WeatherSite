@@ -44,6 +44,46 @@
       border-radius: 100%;
     }
     .weather-icon:hover { background-color: #2cdd49; color: #1a5133; }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 9999;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      border-left: 4px solid #1f974b;
+    }
+
+    .notification.error {
+      border-left: 4px solid #e74c3c;
+    }
+
+    .notification .icon {
+      font-size: 24px;
+    }
+
+    .notification.success .icon {
+      color: #1f974b;
+    }
+
+    .notification.error .icon {
+      color: #e74c3c;
+    }
   </style>
 </head>
 <body>
@@ -76,6 +116,7 @@
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
+    
     try {
       const response = await fetch('/api/login.php', {
         method: 'POST',
@@ -85,16 +126,47 @@
       const data = await response.json();
       if (data.success) {
         document.cookie = `userEmail=${email}; path=/`;
-        alert('Вход выполнен!');
-        window.location.href = 'index.html';
+        showNotification('Вход выполнен!', 'success');
+        setTimeout(() => window.location.href = 'index.html', 1500);
       } else {
-        alert(data.error || 'Ошибка при входе');
+        handleAuthError(data.error);
       }
     } catch (error) {
       console.error('Ошибка:', error);
-      alert('Произошла ошибка при отправке данных');
+      handleAuthError(error.message);
     }
   });
+
+  // Функция для отображения уведомлений
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+      <span class="material-symbols-rounded icon">${type === 'success' ? 'check_circle' : 'error'}</span>
+      <span>${message}</span>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.classList.add('show'), 10);
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
+  }
+
+  // Функция для обработки ошибок регистрации/входа
+  function handleAuthError(error) {
+    let message = 'Произошла ошибка';
+    if (error.includes('Пароль должен содержать минимум 8 символов')) {
+      message = 'Пароль должен содержать минимум 8 символов';
+    } else if (error.includes('Email должен содержать символ @')) {
+      message = 'Email должен содержать символ @';
+    } else if (error.includes('Duplicate entry')) {
+      message = 'Пользователь с таким email уже существует';
+    } else if (error.includes('Invalid credentials')) {
+      message = 'Неверный email или пароль';
+    }
+    showNotification(message, 'error');
+  }
 </script>
 </body>
 </html>

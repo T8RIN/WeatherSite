@@ -23,6 +23,21 @@ set_exception_handler('handleException');
 
 header('Content-Type: application/json; charset=utf-8');
 
+if (isset($_GET['action']) && $_GET['action'] === 'avg_temp') {
+    $db = Database::getInstance()->getConnection();
+    $locationId = intval($_GET['location_id'] ?? 0);
+    $date = $_GET['date'] ?? date('Y-m-d');
+    try {
+        $stmt = $db->prepare("SELECT avg_hourly_temperature(:loc_id, :date) as avg_temp");
+        $stmt->execute(['loc_id' => $locationId, 'date' => $date]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        echo json_encode(['success' => true, 'avg_temp' => $row['avg_temp']]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
 $API_KEY = '92b64a6d838c43918e6181715240511';
 $city = $_GET['city'] ?? null;
 $type = $_GET['type'] ?? 'today';

@@ -57,8 +57,15 @@
       <div class="spacer" style="width: 100%"></div>
     </div>
 
-    <div style="display: flex; justify-content: center;">
-      <button id="showTempRecordsBtn" style="margin: 20px 0 8px 0; border-radius: 18px; padding: 10px 32px; font-size: 1.1rem; background: linear-gradient(90deg, #1f974b 0%, #38b6ff 100%); color: #fff; border: none; box-shadow: 0 2px 8px rgba(56,182,255,0.10); font-weight: 600; letter-spacing: 0.5px; transition: background 0.2s; cursor: pointer;">Температурные рекорды</button>
+    <div style="display: flex; justify-content: center; gap: 16px;">
+      <button id="showTempRecordsBtn"
+              style="margin: 20px 0 8px 0; border-radius: 18px; padding: 10px 32px; font-size: 1.1rem; background: linear-gradient(90deg, #1f974b 0%, #38b6ff 100%); color: #fff; border: none; box-shadow: 0 2px 8px rgba(56,182,255,0.10); font-weight: 600; letter-spacing: 0.5px; transition: background 0.2s; cursor: pointer;">
+        Температурные рекорды
+      </button>
+      <button id="showAvgTempBtn"
+              style="margin: 20px 0 8px 0; border-radius: 18px; padding: 10px 32px; font-size: 1.1rem; background: linear-gradient(90deg, #ff9800 0%, #ff5e62 100%); color: #fff; border: none; box-shadow: 0 2px 8px rgba(255,152,0,0.10); font-weight: 600; letter-spacing: 0.5px; transition: background 0.2s; cursor: pointer;">
+        Средняя температура (почасовая)
+      </button>
     </div>
     <div id="temperature-records-popup" style="display: none; position: fixed; top: 120px; left: 50%; transform: translateX(-50%); background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 320px; max-width: 90vw; z-index: 2000; padding: 24px 32px;">
       <button id="closeTempRecordsBtn" style="position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>

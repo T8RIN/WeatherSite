@@ -163,3 +163,31 @@ SELECT COUNT(*) INTO cnt FROM action_history WHERE user_email = email;
 RETURN cnt;
 END;
 
+create definer = `skip-grants user`@`skip-grants host` trigger before_user_insert
+    before insert
+    on users
+    for each row
+BEGIN
+    IF LENGTH(NEW.email) < 6 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email должен содержать минимум 6 символов';
+    END IF;
+    
+    IF NEW.email NOT LIKE '%@%' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email должен содержать символ @';
+    END IF;
+END;
+
+create definer = `skip-grants user`@`skip-grants host` trigger before_user_update
+    before update
+    on users
+    for each row
+BEGIN
+    IF LENGTH(NEW.email) < 6 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email должен содержать минимум 6 символов';
+    END IF;
+    
+    IF NEW.email NOT LIKE '%@%' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Email должен содержать символ @';
+    END IF;
+END;
+

@@ -13,21 +13,28 @@ if (empty($email) || empty($password)) {
     exit;
 }
 
-$db = Database::getInstance()->getConnection();
-
-// Проверяем, существует ли пользователь с таким email
-$stmt = $db->prepare("SELECT id FROM users WHERE email = :email");
-$stmt->execute(['email' => $email]);
-if ($stmt->fetch()) {
-    echo json_encode(['success' => false, 'error' => 'Пользователь с таким email уже существует']);
+// Проверка длины пароля
+if (strlen($password) < 8) {
+    echo json_encode(['success' => false, 'error' => 'Пароль должен содержать минимум 8 символов']);
     exit;
 }
 
-// Хешируем пароль
-$hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+$db = Database::getInstance()->getConnection();
 
-// Добавляем нового пользователя
-$stmt = $db->prepare("INSERT INTO users (email, password, created_at) VALUES (:email, :password, NOW())");
-$stmt->execute(['email' => $email, 'password' => $hashedPassword]);
+try {
+    // Хешируем пароль
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-echo json_encode(['success' => true]); 
+    // Добавляем нового пользователя
+    $stmt = $db->prepare("INSERT INTO users (email, password, created_at) VALUES (:email, :password, NOW())");
+    $stmt->execute(['email' => $email, 'password' => $hashedPassword]);
+
+    echo json_encode(['success' => true]);
+} catch (PDOException $e) {
+    $errorMessage = $e->getMessage();
+    // Очищаем техническую часть MySQL-ошибки
+    if (preg_match('/1644 (.+)$/', $errorMessage, $matches)) {
+        $errorMessage = trim($matches[1]);
+    }
+    echo json_encode(['success' => false, 'error' => $errorMessage]);
+}
