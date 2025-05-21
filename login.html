@@ -169,6 +169,91 @@
       loginModal.classList.add('d-none');
     }
   });
+
+  // Обработчик отправки формы регистрации
+  document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    if (password !== confirmPassword) {
+      alert('Пароли не совпадают');
+      return;
+    }
+    try {
+      const response = await fetch('/api/register.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Автовход: сохраняем email в куки
+        document.cookie = `userEmail=${email}; path=/`;
+        alert('Регистрация успешна!');
+        window.location.href = 'index.html';
+      } else {
+        alert(data.error || 'Ошибка при регистрации');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Произошла ошибка при отправке данных');
+    }
+  });
+
+  // Обработчик отправки формы входа
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+      const response = await fetch('/api/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Сохраняем email в куки
+        document.cookie = `userEmail=${data.user.email}; path=/`;
+        alert('Вход выполнен успешно!');
+        window.location.href = 'index.html';
+      } else {
+        alert(data.error || 'Ошибка при входе');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Произошла ошибка при отправке данных');
+    }
+  });
+
+  // Функция для отображения почты текущего пользователя и кнопки выхода
+  function updateUserInfo() {
+    const userEmail = getCookie('userEmail');
+    const userInfoDiv = document.getElementById('userInfo');
+    if (userEmail) {
+      userInfoDiv.innerHTML = `
+        <span>${userEmail}</span>
+        <button id="logoutButton" class="btn btn-danger">Выйти</button>
+      `;
+      document.getElementById('logoutButton').addEventListener('click', () => {
+        document.cookie = 'userEmail=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        window.location.reload();
+      });
+    } else {
+      userInfoDiv.innerHTML = '<a href="login.html" class="btn btn-success">Войти</a>';
+    }
+  }
+
+  // Функция для получения значения куки по имени
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  // Вызываем функцию при загрузке страницы
+  updateUserInfo();
 </script>
 </body>
 </html>

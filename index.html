@@ -14,6 +14,13 @@
 </head>
 <body>
 <div class="container">
+  <div id="favorites-tab" style="position: fixed; top: 70px; right: 16px; z-index: 1000; display: none;">
+    <button id="showFavoritesBtn" style="border-radius: 16px; padding: 8px 20px; font-size: 1rem;">⭐ Избранное</button>
+  </div>
+  <div id="favorites-list" class="" style="display: none; position: fixed; top: 120px; right: 16px; z-index: 1000; background: #fff; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); min-width: 220px; max-width: 320px; max-height: 60vh; overflow-y: auto;">
+    <div style="padding: 12px 16px; font-weight: bold; border-bottom: 1px solid #eee;">Ваши города</div>
+    <ul id="favoritesUl" style="list-style: none; margin: 0; padding: 0;"></ul>
+  </div>
   <div class="search-section">
     <div class="input-wrapper">
       <span class="material-symbols-rounded">search</span>
@@ -21,6 +28,9 @@
     </div>
     <button class="location-button">
       <span class="material-symbols-rounded">my_location</span>
+    </button>
+    <button id="addFavoriteBtn" class="favorite-round-btn" style="display: none;" title="Добавить в избранное">
+      <span class="material-symbols-rounded">star</span>
     </button>
   </div>
 
@@ -53,12 +63,47 @@
   </div>
 </div>
 
-<a href="login.html" class="login-icon">
-  <span class="material-symbols-rounded">login</span>
-</a>
+<div id="userInfo" style="position: fixed; top: 16px; right: 16px; z-index: 1000;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
 <script type="module" src="js/app.js"></script>
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+  function updateUserInfo() {
+    const userEmail = getCookie('userEmail');
+    const userInfoDiv = document.getElementById('userInfo');
+    if (userEmail) {
+      userInfoDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="color: #fff; background: #1f974b; border-radius: 16px; padding: 6px 16px; font-size: 1rem; height: 40px; display: flex; align-items: center;">${userEmail}</span>
+          <button id="logoutButton" title="Выйти" class="logout-icon"><span class="material-symbols-rounded">logout</span></button>
+        </div>
+      `;
+      document.getElementById('logoutButton').addEventListener('click', () => {
+        document.cookie = 'userEmail=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        window.location.reload();
+      });
+      const btn = document.getElementById('logoutButton');
+      btn.addEventListener('mouseenter', () => btn.style.background = '#c0392b');
+      btn.addEventListener('mouseleave', () => btn.style.background = '#e74c3c');
+    } else {
+      userInfoDiv.innerHTML = `<a href="login.html" class="login-icon"><span class="material-symbols-rounded">login</span></a>`;
+    }
+  }
+  updateUserInfo();
+
+  // Показываем/скрываем избранное и кнопку добавления, если авторизован
+  function updateFavoritesUI() {
+    const userEmail = getCookie('userEmail');
+    document.getElementById('addFavoriteBtn').style.display = userEmail ? '' : 'none';
+    document.getElementById('favorites-tab').style.display = userEmail ? '' : 'none';
+  }
+  updateFavoritesUI();
+</script>
 </body>
 </html>

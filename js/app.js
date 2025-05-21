@@ -60,6 +60,8 @@ const navigateToToday = () => {
 let dropdownData = ""
 
 const displayHourlyForecast = (hourlyData) => {
+  console.log('Hourly data:', hourlyData);
+  
   const currentHour = new Date().setMinutes(0, 0, 0)
   const next24Hours = currentHour + 24 * 60 * 60 * 1000;
 
@@ -68,17 +70,18 @@ const displayHourlyForecast = (hourlyData) => {
   if (type === "tomorrow") {
     next24HoursData = hourlyData
   } else {
-    next24HoursData = hourlyData.filter(({time}) => {
-      const forecastTime = new Date(time).getTime();
+    next24HoursData = hourlyData.filter(({forecast_time}) => {
+      const forecastTime = new Date(forecast_time).getTime();
       return forecastTime >= currentHour && forecastTime <= next24Hours;
     });
   }
 
-  hourlyWeather.innerHTML = next24HoursData.map((item, index) => {
-    const temperature = Math.floor(item.temp_c);
-    const time = item.time.split(' ')[1].substring(0, 5);
-    const weatherIcon = item.condition.icon.replace("64x64", "128x128");
+  console.log('Filtered hourly data:', next24HoursData);
 
+  hourlyWeather.innerHTML = next24HoursData.map((item, index) => {
+    const temperature = Math.floor(item.temperature);
+    const time = new Date(item.forecast_time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const weatherIcon = item.icon.replace("64x64", "128x128");
 
     const label = `weather-item-${index}`
 
@@ -88,9 +91,9 @@ const displayHourlyForecast = (hourlyData) => {
             <p class="temperature">${temperature}°</p>
 
             <ul class="dropdown-menu ${index}" aria-labelledby="${label}">
-              <p class="dropdown-item">Влажность: ${dropdownData ? dropdownData.humidity : item.humidity}%</p>
-              <p class="dropdown-item">Скорость ветра: ${item.wind_kph} км/ч</p>
-              <p class="dropdown-item">Условия: ${translationsJson.find(translation => translation.code === item.condition.code).languages.find(lang => lang.lang_iso === "ru").night_text}</p>
+              <p class="dropdown-item">Влажность: ${item.humidity}%</p>
+              <p class="dropdown-item">Скорость ветра: ${item.wind_speed} км/ч</p>
+              <p class="dropdown-item">Условия: ${item.description}</p>
             </ul>
           </li>`;
   }).join('');
@@ -98,7 +101,6 @@ const displayHourlyForecast = (hourlyData) => {
   hourlyWeather.innerHTML += `<li class="weather-item">
             <p style="padding-right: 16px"></p>
           </li>`;
-
 };
 
 const getWeatherDetails = async (API_URL, cityName) => {
@@ -122,8 +124,12 @@ const getWeatherDetails = async (API_URL, cityName) => {
     currentWeatherDiv.querySelector(".date").innerText = (type === "tomorrow" ? moment().add(1, "days") : moment()).format('dd, D MMMM');
     currentWeatherDiv.querySelector(".description").innerText = data.description || "Нет описания";
     searchInput.value = cityName;
-    // Нет почасового прогноза — просто очищаем список
-    hourlyWeather.innerHTML = '';
+    // Обновляем состояние кнопки избранного
+    updateFavoriteBtn(cityName);
+    // Отображаем почасовой прогноз
+    if (data.hourly) {
+      displayHourlyForecast(data.hourly);
+    }
   } catch (error) {
     console.log(error);
     showErrorResult();
@@ -159,6 +165,7 @@ locationButton.addEventListener("click", () => {
 
 todayButton.addEventListener("click", () => {
   navigateToToday();
+  if (searchInput.value.trim()) updateFavoriteBtn(searchInput.value.trim());
 });
 
 tomorrowButton.addEventListener("click", () => {
@@ -175,3 +182,123 @@ if (type && type.trim().length > 0) {
     showEmptyResult();
   }
 }
+
+// --- ИЗБРАННОЕ ---
+const addFavoriteBtn = document.getElementById('addFavoriteBtn');
+const showFavoritesBtn = document.getElementById('showFavoritesBtn');
+const favoritesListDiv = document.getElementById('favorites-list');
+const favoritesUl = document.getElementById('favoritesUl');
+
+let currentLocationId = null;
+
+// Получить id локации по названию (или lat/lon)
+async function getLocationId(cityName) {
+  const resp = await fetch(`/api/weather.php?city=${encodeURIComponent(cityName)}`);
+  const data = await resp.json();
+  if (data && data.location_id) return data.location_id;
+  if (data && data.locationId) return data.locationId;
+  if (data && data.id) return data.id;
+  return null;
+}
+
+// Проверить, есть ли город в избранном
+async function isFavorite(locationId) {
+  const resp = await fetch('/api/favorites.php?action=list');
+  const data = await resp.json();
+  if (!data.success) return false;
+  return data.favorites.some(fav => fav.id == locationId);
+}
+
+function updateFavoriteBtnVisibility() {
+  const userEmail = document.cookie.includes('userEmail=');
+  const show = userEmail && !document.body.classList.contains('show-no-results');
+  addFavoriteBtn.style.display = show ? '' : 'none';
+}
+searchInput && searchInput.addEventListener('input', updateFavoriteBtnVisibility);
+window.addEventListener('DOMContentLoaded', updateFavoriteBtnVisibility);
+
+// Обновить состояние кнопки избранного
+async function updateFavoriteBtn(cityName) {
+  updateFavoriteBtnVisibility();
+  if (!cityName) return;
+  const userEmail = document.cookie.includes('userEmail=');
+  if (!userEmail) return;
+  const locationId = await getLocationId(cityName);
+  currentLocationId = locationId;
+  if (!locationId) {
+    addFavoriteBtn.disabled = true;
+    addFavoriteBtn.classList.remove('active');
+    return;
+  }
+  addFavoriteBtn.disabled = false;
+  const fav = await isFavorite(locationId);
+  addFavoriteBtn.classList.toggle('active', fav);
+  addFavoriteBtn.title = fav ? 'Удалить из избранного' : 'Добавить в избранное';
+}
+
+// Добавить/удалить из избранного
+addFavoriteBtn && addFavoriteBtn.addEventListener('click', async () => {
+  if (!currentLocationId) return;
+  const fav = await isFavorite(currentLocationId);
+  const formData = new FormData();
+  formData.append('location_id', currentLocationId);
+  await fetch(`/api/favorites.php?action=${fav ? 'remove' : 'add'}`, {
+    method: 'POST',
+    body: formData
+  });
+  updateFavoriteBtn(searchInput.value.trim());
+  if (showFavoritesBtn) loadFavorites();
+});
+
+// Открыть/закрыть список избранного
+let favoritesOpen = false;
+showFavoritesBtn && showFavoritesBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  favoritesOpen = !favoritesOpen;
+  if (favoritesOpen) {
+    loadFavorites();
+    favoritesListDiv.style.display = 'block';
+    setTimeout(() => favoritesListDiv.classList.add('show'), 10);
+  } else {
+    favoritesListDiv.classList.remove('show');
+    setTimeout(() => favoritesListDiv.style.display = 'none', 200);
+  }
+});
+favoritesListDiv.addEventListener('click', e => e.stopPropagation());
+document.body.addEventListener('click', () => {
+  if (favoritesOpen) {
+    favoritesListDiv.classList.remove('show');
+    setTimeout(() => favoritesListDiv.style.display = 'none', 200);
+    favoritesOpen = false;
+  }
+});
+
+// Загрузить избранные города
+async function loadFavorites() {
+  const resp = await fetch('/api/favorites.php?action=list');
+  const data = await resp.json();
+  favoritesUl.innerHTML = '';
+  if (!data.success || !data.favorites.length) {
+    favoritesUl.innerHTML = '<li style="padding: 12px; color: #888;">Нет избранных городов</li>';
+    return;
+  }
+  data.favorites.forEach(fav => {
+    const li = document.createElement('li');
+    li.style.padding = '10px 16px';
+    li.style.cursor = 'pointer';
+    li.style.borderBottom = '1px solid #eee';
+    li.textContent = fav.name + (fav.country ? ', ' + fav.country : '');
+    li.addEventListener('click', () => {
+      window.location.href = `index.html?city=${encodeURIComponent(fav.name)}`;
+    });
+    favoritesUl.appendChild(li);
+  });
+}
+
+// При загрузке страницы — если есть город, обновить кнопку избранного
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const city = params.get('city');
+  if (city) updateFavoriteBtn(city);
+});
