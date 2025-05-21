@@ -302,3 +302,53 @@ window.addEventListener('DOMContentLoaded', () => {
   const city = params.get('city');
   if (city) updateFavoriteBtn(city);
 });
+
+// Функция для загрузки и отображения температурных рекордов в popup
+async function loadTemperatureRecords(cityName) {
+  const recordsDiv = document.getElementById('temperature-records-popup');
+  const maxUl = document.getElementById('maxTemps');
+  const minUl = document.getElementById('minTemps');
+  if (!recordsDiv || !maxUl || !minUl) return;
+  maxUl.innerHTML = '';
+  minUl.innerHTML = '';
+  try {
+    const resp = await fetch(`/api/temperature_records.php?city=${encodeURIComponent(cityName)}`);
+    const data = await resp.json();
+    if (data.error) return;
+    if (data.max.length === 0 && data.min.length === 0) return;
+    data.max.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.record_date}: ${item.temperature}°C`;
+      maxUl.appendChild(li);
+    });
+    data.min.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = `${item.record_date}: ${item.temperature}°C`;
+      minUl.appendChild(li);
+    });
+  } catch (e) {
+    // ничего не делаем
+  }
+}
+
+// Обработчики для popup
+const showTempBtn = document.getElementById('showTempRecordsBtn');
+const tempPopup = document.getElementById('temperature-records-popup');
+const closeTempBtn = document.getElementById('closeTempRecordsBtn');
+
+if (showTempBtn && tempPopup && closeTempBtn) {
+  showTempBtn.addEventListener('click', () => {
+    const cityName = searchInput.value.trim() || city;
+    loadTemperatureRecords(cityName);
+    tempPopup.style.display = '';
+  });
+  closeTempBtn.addEventListener('click', () => {
+    tempPopup.style.display = 'none';
+  });
+  // Закрытие по клику вне popup
+  window.addEventListener('click', (e) => {
+    if (tempPopup.style.display !== 'none' && !tempPopup.contains(e.target) && e.target !== showTempBtn) {
+      tempPopup.style.display = 'none';
+    }
+  });
+}

@@ -60,6 +60,19 @@ try {
         updateWeather($city, $API_KEY, $db);
         $forecast = $weather->getForecast($locationId, $date);
         $hourlyForecast = $weather->getHourlyForecast($locationId, $date);
+    } else {
+        // Проверяем наличие записей температур
+        $maxTempCheck = $db->prepare("SELECT COUNT(*) FROM max_temperatures WHERE location_id = ? AND record_date = ?");
+        $maxTempCheck->execute([$locationId, $date]);
+        $minTempCheck = $db->prepare("SELECT COUNT(*) FROM min_temperatures WHERE location_id = ? AND record_date = ?");
+        $minTempCheck->execute([$locationId, $date]);
+        
+        // Если нет записей температур — обновляем данные
+        if ($maxTempCheck->fetchColumn() == 0 || $minTempCheck->fetchColumn() == 0) {
+            updateWeather($city, $API_KEY, $db);
+            $forecast = $weather->getForecast($locationId, $date);
+            $hourlyForecast = $weather->getHourlyForecast($locationId, $date);
+        }
     }
 
     if (!$forecast) {
@@ -151,6 +164,36 @@ function updateWeather($city, $API_KEY, $db) {
                 // Если нет — добавим
                 $db->prepare("INSERT INTO forecasts (location_id, weather_type_id, forecast_date, min_temp, max_temp, icon) VALUES (?, ?, ?, ?, ?, ?)")
                     ->execute([$locationId, $weatherTypeId, $date, $minTemp, $maxTemp, $icon]);
+            }
+
+            // Сохраняем максимальную температуру
+            $maxCheck = $db->prepare("SELECT id FROM max_temperatures WHERE location_id = ? AND record_date = ?");
+            $maxCheck->execute([$locationId, $date]);
+            if ($maxRow = $maxCheck->fetch(PDO::FETCH_ASSOC)) {
+                // Обновляем существующую запись
+                $db->prepare("UPDATE max_temperatures SET temperature = ? WHERE id = ?")
+                    ->execute([$maxTemp, $maxRow['id']]);
+                file_put_contents(__DIR__ . '/log_temperatures.txt', "Updated max temperature for {$data['location']['name']} on {$date}: {$maxTemp}°C\n", FILE_APPEND);
+            } else {
+                // Создаем новую запись
+                $db->prepare("INSERT INTO max_temperatures (location_id, temperature, record_date) VALUES (?, ?, ?)")
+                    ->execute([$locationId, $maxTemp, $date]);
+                file_put_contents(__DIR__ . '/log_temperatures.txt', "Inserted max temperature for {$data['location']['name']} on {$date}: {$maxTemp}°C\n", FILE_APPEND);
+            }
+
+            // Сохраняем минимальную температуру
+            $minCheck = $db->prepare("SELECT id FROM min_temperatures WHERE location_id = ? AND record_date = ?");
+            $minCheck->execute([$locationId, $date]);
+            if ($minRow = $minCheck->fetch(PDO::FETCH_ASSOC)) {
+                // Обновляем существующую запись
+                $db->prepare("UPDATE min_temperatures SET temperature = ? WHERE id = ?")
+                    ->execute([$minTemp, $minRow['id']]);
+                file_put_contents(__DIR__ . '/log_temperatures.txt', "Updated min temperature for {$data['location']['name']} on {$date}: {$minTemp}°C\n", FILE_APPEND);
+            } else {
+                // Создаем новую запись
+                $db->prepare("INSERT INTO min_temperatures (location_id, temperature, record_date) VALUES (?, ?, ?)")
+                    ->execute([$locationId, $minTemp, $date]);
+                file_put_contents(__DIR__ . '/log_temperatures.txt', "Inserted min temperature for {$data['location']['name']} on {$date}: {$minTemp}°C\n", FILE_APPEND);
             }
 
             // Сохраняем почасовой прогноз
