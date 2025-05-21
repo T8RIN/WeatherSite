@@ -122,6 +122,13 @@
     document.getElementById('favorites-tab').style.display = userEmail ? '' : 'none';
   }
   updateFavoritesUI();
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const userEmail = document.cookie.includes('userEmail=');
+    if (userEmail && typeof loadFavorites === 'function') {
+      loadFavorites();
+    }
+  });
 </script>
 </body>
 </html>
