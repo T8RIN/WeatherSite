@@ -1,7 +1,7 @@
 <?php
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');     // Замените на вашего пользователя MySQL
-define('DB_PASS', '');         // Замените на ваш пароль MySQL
+define('DB_PASS', 'admin');         // Замените на ваш пароль MySQL
 define('DB_NAME', 'weatherdb'); // Название вашей базы данных
 
 class Database {
@@ -33,4 +33,4 @@ class Database {
         return $this->connection;
     }
 }
-?> 
+?>
