@@ -83,6 +83,13 @@
     </div>
 
     <div class="day-forecast">
+      <div class="sort-buttons" style="display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 8px; align-items: center;">
+        <span style="font-weight: 500; margin-right: 8px;">Сортировка:</span>
+        <button id="sortTimeAsc" class="btn btn-outline-primary btn-sm" title="По времени (возр.)">Время ↑</button>
+        <button id="sortTimeDesc" class="btn btn-outline-primary btn-sm" title="По времени (убыв.)">Время ↓</button>
+        <button id="sortTempAsc" class="btn btn-outline-warning btn-sm" title="По температуре (возр.)">Темп. ↑</button>
+        <button id="sortTempDesc" class="btn btn-outline-warning btn-sm" title="По температуре (убыв.)">Темп. ↓</button>
+      </div>
       <ul class="weather-list"></ul>
     </div>
   </div>

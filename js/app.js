@@ -59,7 +59,35 @@ const navigateToToday = () => {
 
 let dropdownData = ""
 
+// --- Сортировка почасового прогноза ---
+let lastHourlyData = [];
+let currentSort = 'timeAsc';
+
+const sortHourlyData = (data, sortType) => {
+  const arr = [...data];
+  switch (sortType) {
+    case 'timeAsc':
+      return arr.sort((a, b) => new Date(a.forecast_time) - new Date(b.forecast_time));
+    case 'timeDesc':
+      return arr.sort((a, b) => new Date(b.forecast_time) - new Date(a.forecast_time));
+    case 'tempAsc':
+      return arr.sort((a, b) => a.temperature - b.temperature);
+    case 'tempDesc':
+      return arr.sort((a, b) => b.temperature - a.temperature);
+    default:
+      return arr;
+  }
+};
+
+const updateSortButtonsActive = () => {
+  document.getElementById('sortTimeAsc').classList.toggle('active', currentSort === 'timeAsc');
+  document.getElementById('sortTimeDesc').classList.toggle('active', currentSort === 'timeDesc');
+  document.getElementById('sortTempAsc').classList.toggle('active', currentSort === 'tempAsc');
+  document.getElementById('sortTempDesc').classList.toggle('active', currentSort === 'tempDesc');
+};
+
 const displayHourlyForecast = (hourlyData) => {
+  lastHourlyData = hourlyData;
   console.log('Hourly data:', hourlyData);
   
   const currentHour = new Date().setMinutes(0, 0, 0)
@@ -75,6 +103,10 @@ const displayHourlyForecast = (hourlyData) => {
       return forecastTime >= currentHour && forecastTime <= next24Hours;
     });
   }
+
+  // --- применяем сортировку ---
+  next24HoursData = sortHourlyData(next24HoursData, currentSort);
+  updateSortButtonsActive();
 
   console.log('Filtered hourly data:', next24HoursData);
 
@@ -102,6 +134,24 @@ const displayHourlyForecast = (hourlyData) => {
             <p style="padding-right: 16px"></p>
           </li>`;
 };
+
+// --- обработчики кнопок сортировки ---
+document.getElementById('sortTimeAsc').addEventListener('click', () => {
+  currentSort = 'timeAsc';
+  displayHourlyForecast(lastHourlyData);
+});
+document.getElementById('sortTimeDesc').addEventListener('click', () => {
+  currentSort = 'timeDesc';
+  displayHourlyForecast(lastHourlyData);
+});
+document.getElementById('sortTempAsc').addEventListener('click', () => {
+  currentSort = 'tempAsc';
+  displayHourlyForecast(lastHourlyData);
+});
+document.getElementById('sortTempDesc').addEventListener('click', () => {
+  currentSort = 'tempDesc';
+  displayHourlyForecast(lastHourlyData);
+});
 
 const getWeatherDetails = async (API_URL, cityName) => {
   window.innerWidth <= 768 && searchInput.blur();
